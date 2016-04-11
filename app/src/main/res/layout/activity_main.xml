@@ -7,5 +7,6 @@
 
     <com.example.administrator.myplanapplication.MyPlanView
         android:layout_width="match_parent"
+        android:background="#af00"
         android:layout_height="match_parent" />
 </RelativeLayout>
