@@ -71,7 +71,6 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
         minWH = Math.min(windowH, windowW);
         r = 40;
         dotR = 20;
-
         paintDot = new Paint();
         paintDot.setAntiAlias(true);
         paintDot.setColor(dotColor);
@@ -83,8 +82,8 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
 
 
     private void actionDown(MotionEvent event) {
-        oldX = event.getX();
-        oldY = event.getY();
+            oldX = event.getX();
+            oldY = event.getY();
     }
 
     private float oldX;
@@ -94,15 +93,35 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
      * 手指的移动动作
      */
 
+    float currentX;//当前坐标值
+    float X;//当前坐标与上次测量坐标差值
+    float currentY;//当前坐标值
+    float Y;//当前坐标与上次测量坐标差值
+
     private void actionMove(MotionEvent event) {
-        float currentX = event.getX();//当前坐标值
-        float X = currentX - oldX;//当前坐标与上次测量坐标差值
+        currentX = event.getX();
+        X = currentX - oldX;
+        currentY = event.getY();
+        Y = currentY - oldY;
+        if (X > windowW / 8 || Y > windowH / 10) {
+            return;
+        }
         oldX = currentX;
-        float currentY = event.getY();//当前坐标值
-        float Y = currentY - oldY;//当前坐标与上次测量坐标差值
         oldY = currentY;//设置当前坐标为上次坐标
         x += X;
         y += Y;
+        if (x < r) {
+            x = r;
+        }
+        if (y < r) {
+            y = r;
+        }
+        if (x > windowW - r) {
+            x = windowW - r;
+        }
+        if (y > windowH - r) {
+            y = windowH - r;
+        }
     }
 
     private List<Dot> list;
@@ -116,6 +135,7 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
     private long startTime;
     private float tottleTime;
 
+                            long l;
     @Override
     public void surfaceCreated(final SurfaceHolder holder) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).setMessage("开始").setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -131,6 +151,13 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
                                 Thread.sleep(10);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
+                            }
+                            l = System.currentTimeMillis();
+                            if ( l- startTime > 5000
+                                    && l - startTime < 5011) {
+                                for (int i = 0; i < 10; i++) {
+                                    list.add(new Dot(windowW / 2, windowH / 3, dotR));
+                                }
                             }
                         }
 
@@ -156,11 +183,14 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
+    private boolean isFirst = true;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 actionDown(event);
+                isFirst = false;
                 break;
             case MotionEvent.ACTION_MOVE:
                 actionMove(event);
@@ -176,19 +206,11 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawColor(colorBg);
         canvas.drawCircle(x, y, r, paint);
         for (int i = 0; i < listDot.size(); i++) {
-            if (getIsFinished(x, y, listDot, i)) {
-                flag = false;
-                tottleTime = (System.currentTimeMillis() - startTime) / 1000f;
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog = new AlertDialog.Builder(context)
-                                .setMessage("失败" + "\n" + tottleTime + " 秒")
-                                .setPositiveButton("确定", null).create();
-                        dialog.show();
-                    }
-                });
-            }
+//            if (getIsFinished(x, y, listDot, i)) {
+//                flag = false;
+//                tottleTime = (System.currentTimeMillis() - startTime) / 1000f;
+//                showFaildWindow();
+//            }
 
             canvas.drawCircle(listDot.get(i).x
                     , listDot.get(i).y
@@ -197,6 +219,22 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
             listDot.get(i).move();
         }
         holder.unlockCanvasAndPost(canvas);
+    }
+
+    private void showFaildWindow() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                dialog = new AlertDialog.Builder(context)
+                        .setMessage("失败" + "\n" + tottleTime + " 秒")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).create();
+                dialog.show();
+            }
+        });
     }
 
     /**
@@ -210,7 +248,7 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
      */
     private boolean getIsFinished(float x, float y, List<Dot> listDot, int i) {
         return Math.abs((listDot.get(i).x - x) * (listDot.get(i).x - x) + (listDot.get(i).y - y) * (listDot.get(i).y - y))
-                <= (40 * 40 + 20 * 20);
+                <= (3600);//60的平方
     }
 
     class Dot {
