@@ -82,8 +82,8 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
 
 
     private void actionDown(MotionEvent event) {
-            oldX = event.getX();
-            oldY = event.getY();
+        oldX = event.getX();
+        oldY = event.getY();
     }
 
     private float oldX;
@@ -103,7 +103,7 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
         X = currentX - oldX;
         currentY = event.getY();
         Y = currentY - oldY;
-        if (X > windowW / 8 || Y > windowH / 10) {
+        if (X > windowW / 4 || Y > windowH / 4) {
             return;
         }
         oldX = currentX;
@@ -135,7 +135,8 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
     private long startTime;
     private float tottleTime;
 
-                            long l;
+    long llll;
+
     @Override
     public void surfaceCreated(final SurfaceHolder holder) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).setMessage("开始").setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -152,9 +153,10 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            l = System.currentTimeMillis();
-                            if ( l- startTime > 5000
-                                    && l - startTime < 5011) {
+                            llll = System.currentTimeMillis();
+                            if (((llll - startTime) / 1000==5)
+                                    && ((llll - startTime)  %1000<11)
+                                    ) {
                                 for (int i = 0; i < 10; i++) {
                                     list.add(new Dot(windowW / 2, windowH / 3, dotR));
                                 }
@@ -183,19 +185,25 @@ public class MyPlanView extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
-    private boolean isFirst = true;
+    private boolean isOnTouch = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                actionDown(event);
-                isFirst = false;
+//                if (!isOnTouch) {
+                    actionDown(event);
+//                    isOnTouch = true;
+//                }
                 break;
             case MotionEvent.ACTION_MOVE:
+//                if(isOnTouch){
                 actionMove(event);
+
+//                }
                 break;
             case MotionEvent.ACTION_UP:
+//                isOnTouch = false;
                 break;
         }
         return true;
