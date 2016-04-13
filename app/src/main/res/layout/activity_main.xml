@@ -6,8 +6,30 @@
     tools:context="com.example.administrator.myplanapplication.MainActivity">
 
     <com.example.administrator.myplanapplication.MyPlanView
-        android:layout_width="match_parent"
         android:id="@+id/mpv"
-        android:background="#af50"
-        android:layout_height="match_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#af50" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/shadow_bottom" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shadow_top" />
+
+    <View
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/shadow_left" />
+
+    <View
+        android:layout_width="3dp"
+        android:layout_alignParentRight="true"
+        android:layout_height="match_parent"
+        android:background="@drawable/shadow_right" />
 </RelativeLayout>
